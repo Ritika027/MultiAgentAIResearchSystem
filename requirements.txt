@@ -1,0 +1,46 @@
+# Streamlit
+streamlit==1.33.0
+
+# LangChain (FIXED versions - very important)
+langchain==0.2.14
+langchain-core==0.2.32
+langchain-community==0.2.12
+langchain-openai==0.1.22
+
+# OpenAI
+openai==1.37.1
+
+# Tavily
+tavily-python==0.3.3
+
+# Web scraping
+beautifulsoup4==4.12.3
+requests==2.31.0
+lxml==5.2.1
+
+# Env
+python-dotenv==1.0.1
+
+# Async
+aiohttp==3.9.5
+
+# Data
+pandas==2.2.2
+
+# Token utils
+tiktoken==0.7.0
+
+# Debug
+rich==13.7.1
+
+# Retry
+tenacity==8.2.3
+
+# JSON
+orjson==3.10.3
+
+# Typing
+pydantic==2.7.1
+
+# HTML parser
+html5lib==1.1

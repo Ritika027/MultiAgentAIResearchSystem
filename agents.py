@@ -1,33 +1,62 @@
-from langchain.agents import create_agent
+# 
+
+from langchain.agents import create_react_agent, AgentExecutor
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from tools import web_search , scrape_url
+from tools import web_search, scrape_url
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
-#model setup
-llm = ChatOpenAI(model = "gpt-4o-mini",temperature=0)
+# ------------------ MODEL SETUP ------------------
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-#1st agent
+# ------------------ REACT PROMPT ------------------
+react_prompt = PromptTemplate.from_template(
+    """You are a helpful AI assistant.
+You have access to the following tools.
+
+{tools}
+
+Use them if needed.
+
+User question:
+{input}
+
+{agent_scratchpad}"""
+)
+
+# ------------------ SEARCH AGENT ------------------
 def build_search_agent():
-    return create_agent(
-        model = llm,
-        tools = [web_search]
+    agent = create_react_agent(
+        llm=llm,
+        tools=[web_search],
+        prompt=react_prompt
     )
 
-#2nd agent
+    return AgentExecutor(
+        agent=agent,
+        tools=[web_search],
+        verbose=True
+    )
 
+# ------------------ READER AGENT ------------------
 def build_reader_agent():
-    return create_agent(
-        model = llm,
-        tools = [scrape_url]
+    agent = create_react_agent(
+        llm=llm,
+        tools=[scrape_url],
+        prompt=react_prompt
     )
 
-#create chains
-#writer chain LCEL pipeline
+    return AgentExecutor(
+        agent=agent,
+        tools=[scrape_url],
+        verbose=True
+    )
 
+# ------------------ WRITER CHAIN ------------------
 writer_prompt = ChatPromptTemplate.from_messages([
     ("system", "You are an expert research writer. Write clear, structured and insightful reports."),
     ("human", """Write a detailed research report on the topic below.
@@ -48,10 +77,9 @@ Be detailed, factual and professional."""),
 
 writer_chain = writer_prompt | llm | StrOutputParser()
 
-
-#critic chain
+# ------------------ CRITIC CHAIN ------------------
 critic_prompt = ChatPromptTemplate.from_messages([
-     ("system", "You are a sharp and constructive research critic. Be honest and specific."),
+    ("system", "You are a sharp and constructive research critic. Be honest and specific."),
     ("human", """Review the research report below and evaluate it strictly.
 
 Report:
