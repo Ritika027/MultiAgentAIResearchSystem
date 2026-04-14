@@ -100,20 +100,52 @@ You are an intelligent AI assistant.
 You have access to the following tools:
 {tools}
 
-Use the following format:
+STRICT RULES:
+- Do NOT write function calls like web_search("query")
+- Always follow EXACT format
+
+FORMAT:
 
 Question: {input}
 Thought: think step by step
 Action: one of [{tool_names}]
-Action Input: input to the tool
-Observation: result of the tool
-... (repeat Thought/Action/Observation if needed)
-Final Answer: give final answer to user
+Action Input: plain text input (no quotes, no brackets)
+Observation: tool result
+
+Repeat if needed.
+
+Final Answer: give final answer
 
 {agent_scratchpad}
 """)
-
 # ------------------ SEARCH AGENT ------------------
+# def build_search_agent():
+#     agent = create_react_agent(
+#         llm=llm,
+#         tools=[web_search],
+#         prompt=react_prompt
+#     )
+
+#     return AgentExecutor(
+#         agent=agent,
+#         tools=[web_search],
+#         verbose=True
+#     )
+
+# # ------------------ READER AGENT ------------------
+# def build_reader_agent():
+#     agent = create_react_agent(
+#         llm=llm,
+#         tools=[scrape_url],
+#         prompt=react_prompt
+#     )
+
+#     return AgentExecutor(
+#         agent=agent,
+#         tools=[scrape_url],
+#         verbose=True
+#     )
+
 def build_search_agent():
     agent = create_react_agent(
         llm=llm,
@@ -124,10 +156,11 @@ def build_search_agent():
     return AgentExecutor(
         agent=agent,
         tools=[web_search],
-        verbose=True
+        verbose=True,
+        handle_parsing_errors=True   
     )
 
-# ------------------ READER AGENT ------------------
+
 def build_reader_agent():
     agent = create_react_agent(
         llm=llm,
@@ -138,7 +171,8 @@ def build_reader_agent():
     return AgentExecutor(
         agent=agent,
         tools=[scrape_url],
-        verbose=True
+        verbose=True,
+        handle_parsing_errors=True   
     )
 
 # ------------------ WRITER CHAIN ------------------
