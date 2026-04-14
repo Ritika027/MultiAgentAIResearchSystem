@@ -92,19 +92,26 @@ load_dotenv()
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 # ------------------ REACT PROMPT ------------------
-react_prompt = PromptTemplate.from_template(
-    """You are a helpful AI assistant.
-You have access to the following tools.
+from langchain.prompts import PromptTemplate
 
+react_prompt = PromptTemplate.from_template("""
+You are an intelligent AI assistant.
+
+You have access to the following tools:
 {tools}
 
-Use them if needed.
+Use the following format:
 
-User question:
-{input}
+Question: {input}
+Thought: think step by step
+Action: one of [{tool_names}]
+Action Input: input to the tool
+Observation: result of the tool
+... (repeat Thought/Action/Observation if needed)
+Final Answer: give final answer to user
 
-{agent_scratchpad}"""
-)
+{agent_scratchpad}
+""")
 
 # ------------------ SEARCH AGENT ------------------
 def build_search_agent():
